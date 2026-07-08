@@ -44,7 +44,7 @@ static void WriteLog(NSString *format, ...) {
 }
 
 static BOOL IsDoubaoBundleID(id value) {
-    return [value isKindOfClass:[NSString class]] && [(NSString *)value isEqualToString:@"com.bytedance.ios.doubaoime"];
+    return [value isKindOfClass:[NSString class]] && ([(NSString *)value isEqualToString:@"com.bytedance.ios.doubaoime"] || [(NSString *)value isEqualToString:@"com.tencent.wetype"]);
 }
 
 static DoubaoPiPIdentity IdentityFromBundleID(id value) {
