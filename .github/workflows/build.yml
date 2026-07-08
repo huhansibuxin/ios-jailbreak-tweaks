@@ -2,9 +2,12 @@ name: Build HideDoubaoPiP
 
 on:
   push:
+    branches: [main, master]
     paths:
       - 'plugins/hide-doubao-pip/**'
       - '.github/workflows/build.yml'
+  pull_request:
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -16,26 +19,31 @@ jobs:
 
       - name: Setup Theos
         run: |
-          brew install dpkg ldid
-          git clone --depth 1 https://github.com/theos/theos.git $THEOS
-          mkdir -p $THEOS/sdks
-          curl -L -o /tmp/sdks.zip https://github.com/theos/sdks/archive/refs/heads/master.zip
-          unzip -q /tmp/sdks.zip -d /tmp
-          cp -r /tmp/sdks-master/iPhoneOS16.5.sdk $THEOS/sdks/
-        env:
-          THEOS: /tmp/theos
+          export THEOS=$HOME/theos
+          git clone --recursive --depth 1 https://github.com/theos/theos.git $THEOS
 
-      - name: Build HideDoubaoPiP
+      - name: Install SDK
         run: |
-          export PATH="/opt/homebrew/bin:$THEOS/bin:$PATH"
-          cd plugins/hide-doubao-pip
-          make package FINALPACKAGE=1
-        env:
-          THEOS: /tmp/theos
-          PERL5LIB: /tmp/theos/lib
+          cd $HOME/theos/sdks
+          curl -LO https://github.com/theos/sdks/archive/refs/heads/master.zip
+          unzip -q master.zip
+          cp -r sdks-master/iPhoneOS16.5.sdk .
+          rm -rf sdks-master master.zip
 
-      - name: Upload artifact
+      - name: Install ldid
+        run: brew install ldid
+
+      - name: Build
+        run: |
+          export THEOS=$HOME/theos
+          cd plugins/hide-doubao-pip
+          make clean
+          make package FINALPACKAGE=1
+
+      - name: Upload deb
         uses: actions/upload-artifact@v4
         with:
           name: HideDoubaoPiP-deb
           path: plugins/hide-doubao-pip/packages/*.deb
+          retention-days: 7
+          if-no-files-found: error
