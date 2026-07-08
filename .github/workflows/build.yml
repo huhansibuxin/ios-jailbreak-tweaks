@@ -16,6 +16,7 @@ jobs:
 
       - name: Setup Theos
         run: |
+          brew install dpkg ldid
           git clone --depth 1 https://github.com/theos/theos.git $THEOS
           mkdir -p $THEOS/sdks
           curl -L -o /tmp/sdks.zip https://github.com/theos/sdks/archive/refs/heads/master.zip
