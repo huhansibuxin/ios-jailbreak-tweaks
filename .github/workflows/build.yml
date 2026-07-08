@@ -17,10 +17,7 @@ jobs:
       - name: Setup Theos
         run: |
           brew install dpkg ldid
-          git clone --recursive https://github.com/theos/theos.git $THEOS
-          cd $THEOS && git submodule update --init --recursive
-          find $THEOS/bin -name "*.pl" -exec perl -pi -e 's|^#!/usr/bin/perl|#!/usr/bin/env perl|' {} \;
-          ls -la $THEOS/vendor/
+          git clone --depth 1 https://github.com/theos/theos.git $THEOS
           mkdir -p $THEOS/sdks
           curl -L -o /tmp/sdks.zip https://github.com/theos/sdks/archive/refs/heads/master.zip
           unzip -q /tmp/sdks.zip -d /tmp
@@ -30,11 +27,11 @@ jobs:
 
       - name: Build HideDoubaoPiP
         run: |
-          export PATH="/opt/homebrew/bin:$PATH"
           cd plugins/hide-doubao-pip
           make package FINALPACKAGE=1
         env:
           THEOS: /tmp/theos
+          PERL5LIB: /tmp/theos/lib
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
