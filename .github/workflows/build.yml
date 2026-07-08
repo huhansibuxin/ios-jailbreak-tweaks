@@ -1,0 +1,38 @@
+name: Build HideDoubaoPiP
+
+on:
+  push:
+    paths:
+      - 'plugins/hide-doubao-pip/**'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Theos
+        run: |
+          git clone --depth 1 https://github.com/theos/theos.git $THEOS
+          mkdir -p $THEOS/sdks
+          curl -L -o /tmp/sdks.zip https://github.com/theos/sdks/archive/refs/heads/master.zip
+          unzip -q /tmp/sdks.zip -d /tmp
+          cp -r /tmp/sdks-master/iPhoneOS16.5.sdk $THEOS/sdks/
+        env:
+          THEOS: /tmp/theos
+
+      - name: Build HideDoubaoPiP
+        run: |
+          cd plugins/hide-doubao-pip
+          make package FINALPACKAGE=1
+        env:
+          THEOS: /tmp/theos
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HideDoubaoPiP-deb
+          path: plugins/hide-doubao-pip/packages/*.deb
