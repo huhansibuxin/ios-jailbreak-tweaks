@@ -18,6 +18,7 @@ jobs:
         run: |
           brew install dpkg ldid
           git clone --depth 1 https://github.com/theos/theos.git $THEOS
+          find $THEOS/bin -name "*.pl" -exec sed -i '' '1s|#!/usr/bin/perl|#!/usr/bin/env perl|' {} \;
           mkdir -p $THEOS/sdks
           curl -L -o /tmp/sdks.zip https://github.com/theos/sdks/archive/refs/heads/master.zip
           unzip -q /tmp/sdks.zip -d /tmp
@@ -28,14 +29,6 @@ jobs:
       - name: Build HideDoubaoPiP
         run: |
           export PATH="/opt/homebrew/bin:$PATH"
-          echo "=== THEOS ==="
-          ls $THEOS/bin/dm.pl 2>/dev/null || echo "dm.pl NOT FOUND"
-          echo "=== PATH ==="
-          echo $PATH
-          echo "=== Perl ==="
-          which perl
-          echo "=== dpkg ==="
-          which dpkg-deb
           cd plugins/hide-doubao-pip
           make package FINALPACKAGE=1
         env:
