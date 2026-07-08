@@ -18,7 +18,9 @@ jobs:
         run: |
           brew install dpkg ldid
           git clone --recursive https://github.com/theos/theos.git $THEOS
+          cd $THEOS && git submodule update --init --recursive
           find $THEOS/bin -name "*.pl" -exec perl -pi -e 's|^#!/usr/bin/perl|#!/usr/bin/env perl|' {} \;
+          ls -la $THEOS/vendor/
           mkdir -p $THEOS/sdks
           curl -L -o /tmp/sdks.zip https://github.com/theos/sdks/archive/refs/heads/master.zip
           unzip -q /tmp/sdks.zip -d /tmp
