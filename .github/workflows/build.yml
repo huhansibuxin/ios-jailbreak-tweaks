@@ -27,6 +27,7 @@ jobs:
 
       - name: Build HideDoubaoPiP
         run: |
+          export PATH="/opt/homebrew/bin:$THEOS/bin:$PATH"
           cd plugins/hide-doubao-pip
           make package FINALPACKAGE=1
         env:
